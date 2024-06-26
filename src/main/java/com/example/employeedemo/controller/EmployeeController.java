@@ -30,7 +30,7 @@ public class EmployeeController {
         return "new_employee";
     }
 
-    @PostMapping("/saveEmployee")
+    @PostMapping("/saveEmployeeDetails")
     public String saveEmployeeDetails(@ModelAttribute("employee") Employee employee) {
         //save employee to database
         employeeService.saveEmployee(employee);
@@ -45,5 +45,12 @@ public class EmployeeController {
         //set employee as a model attribute to pre-populate the form
         model.addAttribute("employee", employee);
         return "update_employee";
+    }
+
+    @GetMapping("/deleteEmployee/{id}")
+    public String deleteEmployee(@PathVariable(value="id") long id){
+        //call delete employee method
+        this.employeeService.deleteEmployeeById(id);
+        return "redirect:/";
     }
 }
