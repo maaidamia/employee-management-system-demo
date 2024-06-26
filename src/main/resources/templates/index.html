@@ -29,14 +29,34 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="employee: ${listEmployees}">
+                        <tr th:each="employee: ${listOfEmployees}">
                             <td th:text="${employee.firstName}"></td>
                             <td th:text="${employee.lastName}"></td>
                             <td th:text="${employee.email}"></td>
-                            <td><a th:href="@{/showFormForUpdate/{id}(id=${employee.id})}" class="btn btn-primary">Update</a><a th:href="@{/deleteEmployee/{id}(id=${employee.id})}" class="btn btn-danger">Delete</a></td>
+                            <td><a th:href="@{/showFormForUpdate/{id}(id=${employee.id})}" class="btn btn-primary">Update</a>&nbsp;&nbsp;<a th:href="@{/deleteEmployee/{id}(id=${employee.id})}" class="btn btn-danger">Delete</a></td>
                         </tr>
                         </tbody>
                     </table>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p>Showing <span th:text="${start}">1</span> to <span th:text="${end}">5</span> of <span th:text="${totalItems}">57</span> entries</p>
+                        </div>
+                        <div class="col-md-6">
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination justify-content-end">
+                                    <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                                        <a class="page-link" th:href="@{/employees(page=${currentPage - 1})}">Previous</a>
+                                    </li>
+                                    <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}" th:classappend="${i == currentPage} ? 'active'">
+                                        <a class="page-link" th:href="@{/employees(page=${i})}" th:text="${i}">1</a>
+                                    </li>
+                                    <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                                        <a class="page-link" th:href="@{/employees(page=${currentPage + 1})}">Next</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
