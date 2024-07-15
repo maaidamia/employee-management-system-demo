@@ -22,7 +22,7 @@
                 Update Employee Details
             </div>
             <div class="card-body">
-                <form action="#" th:action="@{/saveEmployee}" th:object="${employee}" method="post">
+                <form action="#" th:action="@{/employees/save}" th:object="${employee}" method="post">
                     <!-- Add hidden form field to handle update -->
                     <input type="hidden" th:field="*{id}">
                     <div class="form-group">

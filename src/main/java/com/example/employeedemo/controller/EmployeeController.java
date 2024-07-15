@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -20,11 +21,11 @@ public class EmployeeController {
 
     // display list of employees
     @GetMapping("/")
-    public String viewHomePage(Model model){
-        return findPagination(1, model);
+    public String viewHomePage(Model model) {
+        return pageAndSort(1, 5, new String[]{"firstName"}, new String[]{"asc"}, model);
     }
 
-    @GetMapping("/showNewEmployeeForm")
+    @GetMapping("/employees/new")
     public String showNewEmployeeForm(Model model) {
         //create model attribute to bind form data
         Employee employee = new Employee();
@@ -32,14 +33,14 @@ public class EmployeeController {
         return "new_employee";
     }
 
-    @PostMapping("/saveEmployeeDetails")
+    @PostMapping("/employees/save")
     public String saveEmployeeDetails(@ModelAttribute("employee") Employee employee) {
         //save employee to database
         employeeService.saveEmployee(employee);
         return "redirect:/";
     }
 
-    @GetMapping("/showFormForUpdate/{id}")
+    @GetMapping("/employees/update/{id}")
     public String showFormForUpdate(@PathVariable(value="id") long id, Model model){
         //get employee from the service
         Employee employee = employeeService.getEmployeeById(id);
@@ -49,7 +50,7 @@ public class EmployeeController {
         return "update_employee";
     }
 
-    @GetMapping("/deleteEmployee/{id}")
+    @GetMapping("/employees/delete/{id}")
     public String deleteEmployee(@PathVariable(value="id") long id){
         //call delete employee method
         this.employeeService.deleteEmployeeById(id);
@@ -57,10 +58,12 @@ public class EmployeeController {
     }
 
     @GetMapping("/employees")
-    public String findPagination(@RequestParam(value="page", defaultValue = "1") int pageNo, Model model){
-        int pageSize = 5;
-
-        Page<Employee> page = employeeService.findPaginated(pageNo, pageSize);
+    public String pageAndSort(@RequestParam(value="page", defaultValue = "1") int pageNo,
+                                 @RequestParam(value="size", defaultValue = "5") int pageSize,
+                                 @RequestParam(value="sort", defaultValue = "firstName") String[] sortFields,
+                                 @RequestParam(value="order", defaultValue = "asc") String[] sortDirections,
+                                 Model model) {
+        Page<Employee> page = employeeService.pagingAndSorting(pageNo, pageSize, sortFields, sortDirections);
         List<Employee> listOfEmployees = page.getContent();
 
         int start = (pageNo - 1) * pageSize + 1;
@@ -72,6 +75,9 @@ public class EmployeeController {
         model.addAttribute("listOfEmployees", listOfEmployees);
         model.addAttribute("start", start);
         model.addAttribute("end", end);
+        model.addAttribute("pageSizeParam", pageSize); // to keep track of current page size
+        model.addAttribute("sortFields", sortFields);
+        model.addAttribute("sortDirections", sortDirections);
 
         return "index";
     }
